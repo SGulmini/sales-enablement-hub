@@ -1,0 +1,303 @@
+{
+  "generated_at": "2026-02-28T17:50:06.948141",
+  "adoption_by_market": [
+    {
+      "market": "Germany",
+      "region": "Europe",
+      "maturity": "advanced",
+      "adoption_pct": 84.2,
+      "target_pct": 90.0,
+      "gap": 5.8
+    },
+    {
+      "market": "Japan",
+      "region": "APAC",
+      "maturity": "advanced",
+      "adoption_pct": 78.8,
+      "target_pct": 90.0,
+      "gap": 11.2
+    },
+    {
+      "market": "UK",
+      "region": "Europe",
+      "maturity": "advanced",
+      "adoption_pct": 77.6,
+      "target_pct": 90.0,
+      "gap": 12.4
+    },
+    {
+      "market": "USA",
+      "region": "Americas",
+      "maturity": "advanced",
+      "adoption_pct": 77.2,
+      "target_pct": 90.0,
+      "gap": 12.8
+    },
+    {
+      "market": "Italy",
+      "region": "Europe",
+      "maturity": "advanced",
+      "adoption_pct": 76.2,
+      "target_pct": 90.0,
+      "gap": 13.8
+    },
+    {
+      "market": "Brazil",
+      "region": "Americas",
+      "maturity": "intermediate",
+      "adoption_pct": 57.2,
+      "target_pct": 65.0,
+      "gap": 7.8
+    },
+    {
+      "market": "Australia",
+      "region": "APAC",
+      "maturity": "intermediate",
+      "adoption_pct": 53.8,
+      "target_pct": 65.0,
+      "gap": 11.2
+    },
+    {
+      "market": "Spain",
+      "region": "Europe",
+      "maturity": "intermediate",
+      "adoption_pct": 53.2,
+      "target_pct": 65.0,
+      "gap": 11.8
+    },
+    {
+      "market": "South Korea",
+      "region": "APAC",
+      "maturity": "intermediate",
+      "adoption_pct": 51.4,
+      "target_pct": 65.0,
+      "gap": 13.6
+    },
+    {
+      "market": "France",
+      "region": "Europe",
+      "maturity": "intermediate",
+      "adoption_pct": 49.2,
+      "target_pct": 65.0,
+      "gap": 15.8
+    },
+    {
+      "market": "South Africa",
+      "region": "MEA",
+      "maturity": "beginner",
+      "adoption_pct": 32.0,
+      "target_pct": 40.0,
+      "gap": 8.0
+    },
+    {
+      "market": "Mexico",
+      "region": "Americas",
+      "maturity": "beginner",
+      "adoption_pct": 29.2,
+      "target_pct": 40.0,
+      "gap": 10.8
+    },
+    {
+      "market": "Romania",
+      "region": "Europe",
+      "maturity": "beginner",
+      "adoption_pct": 26.8,
+      "target_pct": 40.0,
+      "gap": 13.2
+    },
+    {
+      "market": "India",
+      "region": "APAC",
+      "maturity": "beginner",
+      "adoption_pct": 22.6,
+      "target_pct": 40.0,
+      "gap": 17.4
+    },
+    {
+      "market": "Poland",
+      "region": "Europe",
+      "maturity": "beginner",
+      "adoption_pct": 21.6,
+      "target_pct": 40.0,
+      "gap": 18.4
+    }
+  ],
+  "revenue_by_region": [
+    {
+      "region": "Europe",
+      "total_revenue": 12376210.37,
+      "avg_growth": 7.9
+    },
+    {
+      "region": "APAC",
+      "total_revenue": 5721266.5,
+      "avg_growth": 8.0
+    },
+    {
+      "region": "Americas",
+      "total_revenue": 4883275.73,
+      "avg_growth": 9.4
+    },
+    {
+      "region": "MEA",
+      "total_revenue": 512025.48,
+      "avg_growth": 10.5
+    }
+  ],
+  "critical_markets": [
+    {
+      "market": "Japan",
+      "region": "APAC",
+      "maturity": "advanced",
+      "adoption_pct": 78.8,
+      "target_pct": 90.0,
+      "gap": 11.2
+    },
+    {
+      "market": "UK",
+      "region": "Europe",
+      "maturity": "advanced",
+      "adoption_pct": 77.6,
+      "target_pct": 90.0,
+      "gap": 12.4
+    },
+    {
+      "market": "USA",
+      "region": "Americas",
+      "maturity": "advanced",
+      "adoption_pct": 77.2,
+      "target_pct": 90.0,
+      "gap": 12.8
+    },
+    {
+      "market": "Italy",
+      "region": "Europe",
+      "maturity": "advanced",
+      "adoption_pct": 76.2,
+      "target_pct": 90.0,
+      "gap": 13.8
+    },
+    {
+      "market": "Australia",
+      "region": "APAC",
+      "maturity": "intermediate",
+      "adoption_pct": 53.8,
+      "target_pct": 65.0,
+      "gap": 11.2
+    },
+    {
+      "market": "Spain",
+      "region": "Europe",
+      "maturity": "intermediate",
+      "adoption_pct": 53.2,
+      "target_pct": 65.0,
+      "gap": 11.8
+    },
+    {
+      "market": "South Korea",
+      "region": "APAC",
+      "maturity": "intermediate",
+      "adoption_pct": 51.4,
+      "target_pct": 65.0,
+      "gap": 13.6
+    },
+    {
+      "market": "France",
+      "region": "Europe",
+      "maturity": "intermediate",
+      "adoption_pct": 49.2,
+      "target_pct": 65.0,
+      "gap": 15.8
+    },
+    {
+      "market": "Mexico",
+      "region": "Americas",
+      "maturity": "beginner",
+      "adoption_pct": 29.2,
+      "target_pct": 40.0,
+      "gap": 10.8
+    },
+    {
+      "market": "Romania",
+      "region": "Europe",
+      "maturity": "beginner",
+      "adoption_pct": 26.8,
+      "target_pct": 40.0,
+      "gap": 13.2
+    },
+    {
+      "market": "India",
+      "region": "APAC",
+      "maturity": "beginner",
+      "adoption_pct": 22.6,
+      "target_pct": 40.0,
+      "gap": 17.4
+    },
+    {
+      "market": "Poland",
+      "region": "Europe",
+      "maturity": "beginner",
+      "adoption_pct": 21.6,
+      "target_pct": 40.0,
+      "gap": 18.4
+    }
+  ],
+  "top_performers": [
+    {
+      "market": "Germany",
+      "region": "Europe",
+      "maturity": "advanced",
+      "adoption_pct": 84.2,
+      "target_pct": 90.0,
+      "gap": 5.8
+    },
+    {
+      "market": "Japan",
+      "region": "APAC",
+      "maturity": "advanced",
+      "adoption_pct": 78.8,
+      "target_pct": 90.0,
+      "gap": 11.2
+    },
+    {
+      "market": "UK",
+      "region": "Europe",
+      "maturity": "advanced",
+      "adoption_pct": 77.6,
+      "target_pct": 90.0,
+      "gap": 12.4
+    }
+  ],
+  "best_practices": [
+    {
+      "market": "Italy",
+      "region": "Europe",
+      "title": "Weekly CRM Check-in",
+      "result": "+18% pipeline accuracy"
+    },
+    {
+      "market": "Italy",
+      "region": "Europe",
+      "title": "B2B Portal Onboarding Kit",
+      "result": "+40% adoption in 2 months"
+    },
+    {
+      "market": "UK",
+      "region": "Europe",
+      "title": "Trade Program Gamification",
+      "result": "+25% rep engagement"
+    },
+    {
+      "market": "Italy",
+      "region": "Europe",
+      "title": "Dashboard Morning Ritual",
+      "result": "+30% data-driven decisions"
+    },
+    {
+      "market": "Italy",
+      "region": "Europe",
+      "title": "Playbook Video Tutorials",
+      "result": "+55% playbook usage"
+    }
+  ]
+}
