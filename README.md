@@ -1,8 +1,10 @@
 # AI Sales Enablement Hub
 
-Prototipo sviluppato per simulare il lavoro quotidiano di un Digital Customer Experience Manager in una multinazionale FMCG.
+Prototype developed to simulate the daily work of a Digital Customer Experience Manager at an FMCG multinational such as JTI.
 
-## Come eseguire
+## How to run
 
+```bash
 pip install -r requirements.txt
 streamlit run app.py
+```
