@@ -1,6 +1,6 @@
 """
-AI Sales Enablement Hub — App Streamlit
-Interfaccia web che unisce tutti gli step del progetto
+AI Sales Enablement Hub — Streamlit App
+Web interface that brings together all project steps
 """
 
 import streamlit as st
@@ -13,9 +13,53 @@ from fpdf import FPDF
 # ─── Config pagina ───────────────────────────────────────────
 st.set_page_config(
     page_title="AI Sales Enablement Hub",
-    page_icon="🚀",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
+
+# ─── Custom CSS — minimal, natural styling ─────────────────────
+st.markdown("""
+<style>
+    /* Clean page header */
+    .stApp h1 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #18181b;
+        margin-bottom: 0.25rem;
+    }
+    
+    .stCaption {
+        color: #71717a;
+        font-size: 0.875rem;
+    }
+    
+    /* Sidebar: soft gray, readable text */
+    [data-testid="stSidebar"] {
+        background-color: #374151;
+    }
+    [data-testid="stSidebar"] .stMarkdown,
+    [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] label span,
+    [data-testid="stSidebar"] p {
+        color: #f9fafb;
+    }
+    [data-testid="stSidebar"] .stCaption {
+        color: #d1d5db;
+    }
+    
+    /* Inputs: subtle border so they're visible */
+    [data-testid="stSelectbox"] > div,
+    [data-testid="stSelectbox"] [role="combobox"] {
+        border: 1px solid #e5e7eb;
+        border-radius: 4px;
+    }
+    [data-testid="stTextInput"] input,
+    [data-testid="stChatInput"] {
+        border: 1px solid #e5e7eb;
+        border-radius: 4px;
+    }
+</style>
+""", unsafe_allow_html=True)
 
 # ─── Carica dati ─────────────────────────────────────────────
 @st.cache_data
@@ -26,96 +70,106 @@ def load_kpi_report():
 def get_openai_client():
     api_key = os.environ.get("OPENAI_API_KEY", "")
     if not api_key:
-        st.error("OPENAI_API_KEY non trovata. Impostala nelle variabili d'ambiente.")
+        st.error("OPENAI_API_KEY not found. Set it in your environment variables.")
         st.stop()
     return OpenAI(api_key=api_key)
 
 # ─── Sidebar ─────────────────────────────────────────────────
-st.sidebar.image("https://img.icons8.com/fluency/96/artificial-intelligence.png", width=60)
-st.sidebar.title("AI Sales Enablement Hub")
-st.sidebar.caption("Prototipo JTI — Digital CX Manager")
+st.sidebar.markdown("### Sales Enablement Hub")
+st.sidebar.markdown("*Digital CX Manager*")
 st.sidebar.divider()
 
-page = st.sidebar.radio("Navigazione", [
-    "🏠 Dashboard",
-    "🤖 AI Analyst",
-    "🔍 Market Matching",
-    "📋 Playbook Generator",
-    "📚 Knowledge Feed",
-    "💬 Chat",
-    "📊 Weekly Report"
-])
+page = st.sidebar.radio(
+    "**Navigazione**",
+    [
+        "Dashboard",
+        "AI Analyst",
+        "Market Matching",
+        "Playbook Generator",
+        "Knowledge Feed",
+        "Chat",
+        "Weekly Report"
+    ],
+    label_visibility="collapsed"
+)
+
+st.sidebar.divider()
+st.sidebar.caption(f"Updated: {datetime.now().strftime('%d %b %Y')}")
 
 kpi_data = load_kpi_report()
 
 # ═══════════════════════════════════════════════════════════════
-# 🏠 DASHBOARD
+# DASHBOARD
 # ═══════════════════════════════════════════════════════════════
-if page == "🏠 Dashboard":
-    st.title("🏠 Dashboard Globale")
-    st.caption(f"Dati aggiornati al {datetime.now().strftime('%d %B %Y')}")
+if page == "Dashboard":
+    st.title("Global Dashboard")
+    st.caption(f"Data as of {datetime.now().strftime('%d %B %Y')}")
 
     adoption = kpi_data.get("adoption_by_market", [])
     critical = kpi_data.get("critical_markets", [])
     top = kpi_data.get("top_performers", [])
     revenue = kpi_data.get("revenue_by_region", [])
 
-    # KPI cards
+    # Metric cards - grid grid-cols-4 gap-5
     col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Mercati Totali", len(adoption))
-    col2.metric("Mercati Critici", len(critical), delta=f"-{len(critical)} sotto target", delta_color="inverse")
-    col3.metric("Top Performer", top[0]["market"] if top else "N/A", f"{top[0]['adoption_pct']}%" if top else "")
-    col4.metric("Regione Leader", revenue[0]["region"] if revenue else "N/A", f"€{revenue[0]['total_revenue']:,.0f}" if revenue else "")
+    with col1:
+        st.metric("Total Markets", len(adoption))
+    with col2:
+        st.metric("Critical Markets", len(critical), delta=f"{len(critical)} below target", delta_color="inverse")
+    with col3:
+        st.metric("Top Performer", top[0]["market"] if top else "N/A", f"{top[0]['adoption_pct']}%" if top else "")
+    with col4:
+        st.metric("Leading Region", revenue[0]["region"] if revenue else "N/A", f"€{revenue[0]['total_revenue']:,.0f}" if revenue else "")
 
-    st.divider()
+    st.markdown("<div style='margin-bottom: 2.5rem;'></div>", unsafe_allow_html=True)
 
-    # Adoption rate tabella
-    col_left, col_right = st.columns(2)
+    # Charts row - lg:col-span-3 + lg:col-span-2 (3:2 ratio)
+    col_left, col_right = st.columns([3, 2])
 
     with col_left:
-        st.subheader("📈 Adoption Rate per Mercato")
+        st.subheader("Adoption Rate by Market")
         for m in adoption:
             gap = m.get("gap", 0)
-            color = "🔴" if gap > 10 else "🟡" if gap > 5 else "🟢"
+            status = "Critical" if gap > 10 else "Attention" if gap > 5 else "OK"
             st.progress(
                 int(m["adoption_pct"]),
-                text=f"{color} {m['market']} — {m['adoption_pct']}% (gap: {gap}%)"
+                text=f"{m['market']} — {m['adoption_pct']}% (gap: {gap}%) [{status}]"
             )
 
     with col_right:
-        st.subheader("💰 Revenue per Regione")
+        st.subheader("Revenue by Region")
         for r in revenue:
             st.metric(
                 r["region"],
                 f"€{r['total_revenue']:,.0f}",
-                f"+{r['avg_growth']}% crescita"
+                f"+{r['avg_growth']}% growth"
             )
 
         st.divider()
-        st.subheader("⚠️ Mercati Critici")
+        st.subheader("Critical Markets")
         for m in critical[:5]:
             st.error(f"**{m['market']}** — gap {m['gap']}% — {m['maturity']}")
 
 # ═══════════════════════════════════════════════════════════════
 # 🤖 AI ANALYST
 # ═══════════════════════════════════════════════════════════════
-elif page == "🤖 AI Analyst":
-    st.title("🤖 AI Adoption Analyst")
-    st.caption("Analisi automatica dei mercati critici, anomalie e opportunità")
+elif page == "AI Analyst":
+    st.title("AI Adoption Analyst")
+    st.caption("Automatic analysis of critical markets, anomalies and opportunities")
 
-    if st.button("▶ Genera Analisi", type="primary"):
+    if st.button("Generate Analysis", type="primary"):
         client = get_openai_client()
         prompt = f"""
-Sei un AI Sales Enablement Analyst per una multinazionale (stile JTI).
-Analizza i dati e produci un'analisi con 4 blocchi:
-SITUAZIONE GLOBALE, MERCATI CRITICI E PERCHÉ, ANOMALIE E OPPORTUNITÀ, PRIORITÀ SETTIMANA.
+You are an AI Sales Enablement Analyst for a multinational FMCG company.
+Analyze the data and produce an analysis with 4 sections:
+GLOBAL SITUATION, CRITICAL MARKETS AND WHY, ANOMALIES AND OPPORTUNITIES, WEEKLY PRIORITIES.
 
-Dati:
+Data:
 {json.dumps(kpi_data, indent=2)}
 
-Sii diretto, professionale, orientato all'azione. Usa dati specifici. Rispondi in italiano.
+Be direct, professional, action-oriented. Use specific data. Respond in English.
 """
-        with st.spinner("Analisi in corso..."):
+        with st.spinner("Analysis in progress..."):
             response = client.chat.completions.create(
                 model="gpt-4o", max_tokens=1500,
                 messages=[{"role": "user", "content": prompt}]
@@ -123,21 +177,21 @@ Sii diretto, professionale, orientato all'azione. Usa dati specifici. Rispondi i
             result = response.choices[0].message.content
 
         st.markdown(result)
-        st.download_button("📥 Scarica Analisi", result, "ai_analysis.txt")
+        st.download_button("Download Analysis", result, "ai_analysis.txt")
 
 # ═══════════════════════════════════════════════════════════════
 # 🔍 MARKET MATCHING
 # ═══════════════════════════════════════════════════════════════
-elif page == "🔍 Market Matching":
-    st.title("🔍 Market Matching Engine")
-    st.caption("Trova quale mercato ha già risolto il tuo problema e come replicarlo")
+elif page == "Market Matching":
+    st.title("Market Matching Engine")
+    st.caption("Find which market has already solved your problem and how to replicate it")
 
     critical = kpi_data.get("critical_markets", [])
     market_names = [m["market"] for m in critical]
 
-    selected = st.selectbox("Seleziona un mercato in difficoltà", market_names)
+    selected = st.selectbox("Select market", market_names)
 
-    if st.button("🔍 Trova Match", type="primary"):
+    if st.button("Find Match", type="primary"):
         target = next(m for m in kpi_data["adoption_by_market"] if m["market"] == selected)
         all_markets = kpi_data["adoption_by_market"]
         best_practices = kpi_data["best_practices"]
@@ -156,18 +210,18 @@ elif page == "🔍 Market Matching":
             candidates.sort(key=lambda x: (x["score"], x["adoption_pct"]), reverse=True)
             match = candidates[0]
 
-            st.success(f"✅ Match trovato: **{match['market']}** (adoption: {match['adoption_pct']}%)")
+            st.success(f"Match found: **{match['market']}** (adoption: {match['adoption_pct']}%)")
 
             client = get_openai_client()
             prompt = f"""
-Sei un AI Sales Enablement Analyst. Il mercato {selected} (adoption: {target['adoption_pct']}%, gap: {target.get('gap',0)}%)
-può imparare da {match['market']} (adoption: {match['adoption_pct']}%).
-Best practice disponibile: {json.dumps(match.get('best_practice'), indent=2)}
+You are an AI Sales Enablement Analyst. Market {selected} (adoption: {target['adoption_pct']}%, gap: {target.get('gap',0)}%)
+can learn from {match['market']} (adoption: {match['adoption_pct']}%).
+Available best practice: {json.dumps(match.get('best_practice'), indent=2)}
 
-Produci 3 blocchi: PERCHÉ QUESTO MATCH, COME REPLICARE LA SOLUZIONE, RISULTATI ATTESI.
-Rispondi in italiano professionale.
+Produce 3 sections: WHY THIS MATCH, HOW TO REPLICATE THE SOLUTION, EXPECTED RESULTS.
+Respond in professional English.
 """
-            with st.spinner("Generazione raccomandazione..."):
+            with st.spinner("Generating recommendation..."):
                 response = client.chat.completions.create(
                     model="gpt-4o", max_tokens=1000,
                     messages=[{"role": "user", "content": prompt}]
@@ -175,35 +229,35 @@ Rispondi in italiano professionale.
                 result = response.choices[0].message.content
 
             st.markdown(result)
-            st.download_button("📥 Scarica Report", result, f"matching_{selected.lower()}.txt")
+            st.download_button("Download Report", result, f"matching_{selected.lower()}.txt")
 
 # ═══════════════════════════════════════════════════════════════
 # 📋 PLAYBOOK GENERATOR
 # ═══════════════════════════════════════════════════════════════
-elif page == "📋 Playbook Generator":
-    st.title("📋 Playbook Generator")
-    st.caption("Genera un playbook commerciale personalizzato per qualsiasi mercato")
+elif page == "Playbook Generator":
+    st.title("Playbook Generator")
+    st.caption("Generate a customized commercial playbook for any market")
 
     all_markets = [m["market"] for m in kpi_data["adoption_by_market"]]
-    selected = st.selectbox("Seleziona il mercato", all_markets)
+    selected = st.selectbox("Select market", all_markets)
 
-    if st.button("📋 Genera Playbook", type="primary"):
+    if st.button("Generate Playbook", type="primary"):
         market = next(m for m in kpi_data["adoption_by_market"] if m["market"] == selected)
         own_bp = [bp for bp in kpi_data["best_practices"] if bp["market"] == selected]
         other_bp = [bp for bp in kpi_data["best_practices"] if bp["market"] != selected]
 
         client = get_openai_client()
         prompt = f"""
-Genera un playbook commerciale completo per il mercato {selected}.
-Profilo: adoption {market['adoption_pct']}%, target {market['target_pct']}%, gap {market.get('gap',0)}%, maturità {market['maturity']}.
-Best practice proprie: {json.dumps(own_bp)}
-Best practice trasferibili: {json.dumps(other_bp)}
+Generate a complete commercial playbook for market {selected}.
+Profile: adoption {market['adoption_pct']}%, target {market['target_pct']}%, gap {market.get('gap',0)}%, maturity {market['maturity']}.
+Own best practices: {json.dumps(own_bp)}
+Transferable best practices: {json.dumps(other_bp)}
 
-5 capitoli: SITUAZIONE ATTUALE, OBIETTIVI 90 GIORNI, TATTICHE E INIZIATIVE,
-BEST PRACTICE DA REPLICARE, PIANO D'AZIONE SETTIMANALE.
-Rispondi in italiano professionale.
+5 chapters: CURRENT SITUATION, 90-DAY OBJECTIVES, TACTICS AND INITIATIVES,
+BEST PRACTICES TO REPLICATE, WEEKLY ACTION PLAN.
+Respond in professional English.
 """
-        with st.spinner("Generazione playbook..."):
+        with st.spinner("Generating playbook..."):
             response = client.chat.completions.create(
                 model="gpt-4o", max_tokens=2000,
                 messages=[{"role": "user", "content": prompt}]
@@ -211,25 +265,25 @@ Rispondi in italiano professionale.
             result = response.choices[0].message.content
 
         st.markdown(result)
-        st.download_button("📥 Scarica Playbook (.txt)", result, f"playbook_{selected.lower()}.txt")
+        st.download_button("Download Playbook (.txt)", result, f"playbook_{selected.lower()}.txt")
 
 # ═══════════════════════════════════════════════════════════════
 # 📚 KNOWLEDGE FEED
 # ═══════════════════════════════════════════════════════════════
-elif page == "📚 Knowledge Feed":
-    st.title("📚 Knowledge Feed Globale")
-    st.caption("Top 3 best practice del mese da condividere con tutti i mercati")
+elif page == "Knowledge Feed":
+    st.title("Global Knowledge Feed")
+    st.caption("Top 3 best practices of the month to share across all markets")
 
-    if st.button("🔄 Genera Feed", type="primary"):
+    if st.button("Generate Feed", type="primary"):
         client = get_openai_client()
         prompt = f"""
-Produci il Knowledge Feed mensile globale con le TOP 3 best practice più impattanti.
-Per ognuna: titolo, mercato di origine, risultato, perché funziona, a chi si applica, come iniziare (3 passi).
-Aggiungi una Nota del Mese finale.
-Dati: {json.dumps(kpi_data, indent=2)}
-Rispondi in italiano professionale.
+Produce the monthly global Knowledge Feed with the TOP 3 most impactful best practices.
+For each: title, market of origin, result, why it works, who it applies to, how to get started (3 steps).
+Add a final Month in Review note.
+Data: {json.dumps(kpi_data, indent=2)}
+Respond in professional English.
 """
-        with st.spinner("Generazione feed..."):
+        with st.spinner("Generating feed..."):
             response = client.chat.completions.create(
                 model="gpt-4o", max_tokens=1500,
                 messages=[{"role": "user", "content": prompt}]
@@ -237,21 +291,21 @@ Rispondi in italiano professionale.
             result = response.choices[0].message.content
 
         st.markdown(result)
-        st.download_button("📥 Scarica Feed", result, f"knowledge_feed_{datetime.now().strftime('%Y_%m')}.txt")
+        st.download_button("Download Feed", result, f"knowledge_feed_{datetime.now().strftime('%Y_%m')}.txt")
 
 # ═══════════════════════════════════════════════════════════════
 # 💬 CHAT
 # ═══════════════════════════════════════════════════════════════
-elif page == "💬 Chat":
-    st.title("💬 Chat con i tuoi Dati")
-    st.caption("Fai domande in linguaggio naturale sui mercati e sull'adozione")
+elif page == "Chat":
+    st.title("Chat with Your Data")
+    st.caption("Ask questions in natural language about markets and adoption")
 
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
-    system_prompt = f"""Sei un AI Sales Enablement Analyst per una multinazionale (stile JTI).
-Rispondi usando SOLO i dati reali forniti. Sii diretto e orientato all'azione. Rispondi in italiano.
-Dati: {json.dumps(kpi_data, indent=2)}"""
+    system_prompt = f"""You are an AI Sales Enablement Analyst for a multinational FMCG company.
+Answer using ONLY the real data provided. Be direct and action-oriented. Respond in English.
+Data: {json.dumps(kpi_data, indent=2)}"""
 
     # Mostra storia chat
     for msg in st.session_state.messages:
@@ -259,7 +313,7 @@ Dati: {json.dumps(kpi_data, indent=2)}"""
             st.markdown(msg["content"])
 
     # Input
-    if prompt := st.chat_input("Es: Quali mercati devo prioritizzare questa settimana?"):
+    if prompt := st.chat_input("E.g.: Which markets should I prioritize this week?"):
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
@@ -278,26 +332,26 @@ Dati: {json.dumps(kpi_data, indent=2)}"""
             st.markdown(answer)
             st.session_state.messages.append({"role": "assistant", "content": answer})
 
-    if st.button("🗑 Cancella Chat"):
+    if st.button("Clear Chat"):
         st.session_state.messages = []
         st.rerun()
 
 # ═══════════════════════════════════════════════════════════════
 # 📊 WEEKLY REPORT
 # ═══════════════════════════════════════════════════════════════
-elif page == "📊 Weekly Report":
-    st.title("📊 Weekly Executive Report")
-    st.caption("Executive summary automatico per il Chief Digital Officer")
+elif page == "Weekly Report":
+    st.title("Weekly Executive Report")
+    st.caption("Automatic executive summary for the Chief Digital Officer")
 
-    if st.button("📊 Genera Report", type="primary"):
+    if st.button("Generate Report", type="primary"):
         client = get_openai_client()
         prompt = f"""
-Genera un executive summary settimanale con 4 blocchi:
-STATO GLOBALE, ALERT MERCATI CRITICI, MOMENTUM, RACCOMANDAZIONI SETTIMANA.
-Tono executive, max 400 parole, dati reali, italiano professionale.
-Dati: {json.dumps(kpi_data, indent=2)}
+Generate a weekly executive summary with 4 sections:
+GLOBAL STATUS, CRITICAL MARKETS ALERT, MOMENTUM, WEEKLY RECOMMENDATIONS.
+Executive tone, max 400 words, real data, professional English.
+Data: {json.dumps(kpi_data, indent=2)}
 """
-        with st.spinner("Generazione report..."):
+        with st.spinner("Generating report..."):
             response = client.chat.completions.create(
                 model="gpt-4o", max_tokens=1000,
                 messages=[{"role": "user", "content": prompt}]
@@ -309,10 +363,10 @@ Dati: {json.dumps(kpi_data, indent=2)}
         top = kpi_data.get("top_performers", [])
 
         col1, col2, col3 = st.columns(3)
-        col1.metric("Mercati Critici", len(critical))
+        col1.metric("Critical Markets", len(critical))
         col2.metric("Top Performer", top[0]["market"] if top else "N/A")
-        col3.metric("Data Report", datetime.now().strftime("%d/%m/%Y"))
+        col3.metric("Report Date", datetime.now().strftime("%d/%m/%Y"))
 
         st.divider()
         st.markdown(result)
-        st.download_button("📥 Scarica Report", result, f"weekly_report_{datetime.now().strftime('%Y_%m_%d')}.txt")
+        st.download_button("Download Report", result, f"weekly_report_{datetime.now().strftime('%Y_%m_%d')}.txt")
